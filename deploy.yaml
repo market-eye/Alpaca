@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpaca
+  labels:
+    app: alpaca-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alpaca-app
+  template:
+    metadata:
+      labels:
+        app: alpaca-app
+    spec:
+      containers:
+      - name: test
+        image: alexfidessa/alpaca-app
+        command: ["sleep", "123456"]
+        envFrom:
+          - configMapRef:
+              name: postgres-config
+        env:
+        - name: APCA_API_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: api-secret
+              key: api_key_id
+        - name: APCA_API_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-secret
+              key: api_secret_key
+        - name: APCA_API_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: api-secret
+              key: api_base_url
+      nodeSelector:
+        beta.kubernetes.io/os: linux
